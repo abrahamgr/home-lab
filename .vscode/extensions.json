@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "ahmadalli.vscode-nginx-conf",
+    "ms-azuretools.vscode-docker",
+    "docker.docker"
+  ]
+}

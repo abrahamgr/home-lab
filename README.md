@@ -1,6 +1,6 @@
 # Setup
 
-All services must use the same Docker network and it should be created manually or ensure all Compose files refer to it.
+All services must use the same Docker network and it should be created manually to ensure all Compose files refer to it.
 
 ```bash
 docker network create frontend_network
@@ -12,7 +12,7 @@ docker network create frontend_network
 docker compose -f ./reverse-proxy/compose.yml up -d
 ```
 
-## Setup PiHole
+## Setup Pihole
 
 Make sure you change your password for web UI.
 
@@ -21,6 +21,8 @@ PIHOLE_PASSWORD=[your password] docker compose -f ./pihole/compose.yml up -d
 ```
 
 ## Setup web app
+
+Example of simple web app.
 
 ```bash
 docker compose -f ./web/compose.yml up -d

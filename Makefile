@@ -1,7 +1,7 @@
 COMPOSE_FILES = \
-  -f reverse-proxy/docker-compose.yml \
-  -f pihole/docker-compose.yml \
-  -f web/docker-compose.yml
+  -f reverse-proxy/compose.yml \
+  -f pihole/compose.yml \
+  -f web/compose.yml
 
 up:
 	docker compose $(COMPOSE_FILES) up -d

@@ -1,0 +1,13 @@
+services:
+  web:
+    image: nginx:latest
+    container_name: web
+    ports:
+      - "80:80" # Map host port 80 to container port 80
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+    restart: always
+
+networks:
+  frontend_network:
+    external: true

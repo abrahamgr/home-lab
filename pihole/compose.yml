@@ -7,7 +7,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       #- "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      - "80:80/tcp"
+      # - "80:80/tcp"
     environment:
       TZ: 'America/Monterrey'
       WEBPASSWORD: $PIHOLE_PASSWORD
@@ -19,7 +19,9 @@ services:
     # cap_add:
     #  - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
     restart: unless-stopped
-
+    networks:
+      - frontend_network
+    
 networks:
   frontend_network:
     external: true

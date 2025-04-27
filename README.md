@@ -12,7 +12,6 @@ docker network create frontend_network
 docker compose -f ./reverse-proxy/compose.yml up -d
 ```
 
-
 ## Setup PiHole
 
 Make sure you change your password for web UI.
@@ -26,7 +25,9 @@ PIHOLE_PASSWORD=[your password] docker compose -f ./pihole/compose.yml up -d
 ```bash
 docker compose -f ./web/compose.yml up -d
 ```
+
 # All at once
+
 Start everything:
 
 ```bash
@@ -41,13 +42,11 @@ make down
 
 Restart everything (down and up):
 
-
 ```bash
 make restart
 ```
 
 See logs (aggregated logs from all containers):
-
 
 ```bash
 make logs

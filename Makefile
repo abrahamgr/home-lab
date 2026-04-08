@@ -17,7 +17,7 @@ logs:
 	docker compose $(COMPOSE_FILES) logs -f
 
 update-pihole:
+	docker pull pihole/pihole:latest
 	docker stop pihole
 	docker rm pihole
-	docker pull pihole/pihole:latest
 	docker compose -f pihole/compose.yml up -d

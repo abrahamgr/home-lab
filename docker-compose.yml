@@ -1,0 +1,50 @@
+services:
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/headers.conf:/etc/nginx/headers.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      TZ: 'America/Monterrey'
+      FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD}
+      FTLCONF_dns_listeningMode: 'all'
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    restart: unless-stopped
+    networks:
+      - proxy
+  # IPV6 high level, some are already reserved by each container
+  # ipv6_address: fd00:dead:beef::48
+
+  web:
+    image: nginx:latest
+    container_name: web
+    volumes:
+      - ./web/index.html:/usr/share/nginx/html/index.html
+    restart: unless-stopped
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    # enable_ipv6: true
+    # ipam:
+    #   config:
+    #     - subnet: "fd00:dead:beef::/48"

@@ -1,23 +1,15 @@
-COMPOSE_FILES = \
-  -f reverse-proxy/compose.yml \
-  -f pihole/compose.yml \
-  -f web/compose.yml
-
 up:
-	docker compose $(COMPOSE_FILES) up -d
+	docker compose up -d
 
 down:
-	docker compose $(COMPOSE_FILES) down
+	docker compose down
 
 restart:
-	docker compose $(COMPOSE_FILES) down
-	docker compose $(COMPOSE_FILES) up -d
+	docker compose down && docker compose up -d
 
 logs:
-	docker compose $(COMPOSE_FILES) logs -f
+	docker compose logs -f
 
 update-pihole:
 	docker pull pihole/pihole:latest
-	docker stop pihole
-	docker rm pihole
-	docker compose -f pihole/compose.yml up -d
+	docker compose up -d --no-deps --force-recreate pihole

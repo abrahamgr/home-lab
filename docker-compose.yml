@@ -41,6 +41,15 @@ services:
     networks:
       - proxy
 
+  iptv:
+    image: iptv:latest
+    container_name: iptv
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - proxy
+
 networks:
   proxy:
     name: proxy

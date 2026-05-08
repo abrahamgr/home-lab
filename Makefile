@@ -13,3 +13,7 @@ logs:
 update-pihole:
 	docker pull pihole/pihole:latest
 	docker compose up -d --no-deps --force-recreate pihole
+
+update-iptv:
+	docker compose up -d --no-deps --force-recreate iptv
+

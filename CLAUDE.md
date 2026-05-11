@@ -10,8 +10,12 @@ nginx/
   nginx.conf           ← uses glob: include /etc/nginx/conf.d/*.conf
   headers.conf         ← common proxy headers, included in each location block
   conf.d/
-    pihole.conf        ← routing for /pihole
-    web.conf           ← routing for /web
+    http/              ← confs included by the :80 server block
+      pihole.conf
+      web.conf
+    https/             ← confs included by the :443 ssl server block
+      iptv.conf
+  certs/               ← self-signed cert/key (git-ignored, `make certs`)
 pihole/
   etc-pihole/          ← persistent Pi-hole data (git-ignored)
   etc-dnsmasq.d/       ← custom DNS config
@@ -30,7 +34,7 @@ Path-based via Nginx. All apps accessible at `http://<host>/<appname>`. No subdo
 ## Adding a New App
 
 1. Add a service in `docker-compose.yml` on the `proxy` network — no host port mapping needed
-2. Create `nginx/conf.d/<appname>.conf` with a `location /appname { proxy_pass http://<container>/; include /etc/nginx/headers.conf; }` block
+2. Create `nginx/conf.d/http/<appname>.conf` (plain HTTP) or `nginx/conf.d/https/<appname>.conf` (TLS on :443) with a `location /appname { proxy_pass http://<container>/; include /etc/nginx/headers.conf; }` block
 3. Run `docker compose up -d`
 
 ## Key Constraints

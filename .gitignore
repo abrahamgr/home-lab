@@ -4,3 +4,6 @@ etc-pihole
 
 # iptv
 data
+
+# nginx
+nginx/certs

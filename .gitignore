@@ -2,8 +2,5 @@
 etc-dnsmask.d
 etc-pihole
 
-# iptv
-data
-
 # nginx
 nginx/certs

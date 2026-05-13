@@ -46,11 +46,15 @@ services:
     image: iptv:latest
     container_name: iptv
     volumes:
-      - ./data:/app/data
-      - ./nginx/certs:/app/data
+      - iptv-data:/app/data
+      - ./nginx/certs:/app/certs
     restart: unless-stopped
     networks:
       - proxy
+
+volumes:
+  iptv-data:
+    name: iptv-data
 
 networks:
   proxy:

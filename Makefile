@@ -29,3 +29,5 @@ certs:
 		-addext "extendedKeyUsage=serverAuth" \
 		-addext "basicConstraints=CA:FALSE"
 
+restart-nginx:
+	docker exec -d nginx-proxy nginx -s reload

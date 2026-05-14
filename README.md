@@ -7,6 +7,7 @@ Self-hosted services running behind an Nginx reverse proxy, with Pi-hole for DNS
 | Service | Path | Description |
 |---------|------|-------------|
 | Pi-hole | `/pihole` | DNS server and ad-blocker |
+| iptv | `/tv` | iptv server |
 | Web | `/web` | Example static web app |
 
 ## Setup
@@ -26,6 +27,8 @@ PIHOLE_PASSWORD=[your password] make up
 | `make restart` | Restart all services |
 | `make logs` | Tail aggregated logs |
 | `make update-pihole` | Pull latest Pi-hole image and recreate container |
+| `make certs` | Generate new self-signed certificates |
+| `make restart-nginx` | Restart Nginx to apply changes |
 
 ## Adding a New Web App
 

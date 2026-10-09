@@ -41,4 +41,4 @@ Path-based via Nginx. All apps accessible at `http://<host>/<appname>`. No subdo
 
 - Do not add host port mappings to new services — they route through Nginx only
 - Do not change the network name `proxy` without updating all service definitions
-- Pi-hole port 53 (TCP+UDP) is the only non-proxy port exposed
+- Pi-hole port 53 (TCP+UDP) and Mosquitto port 1883 (the Zigbee bridge speaks MQTT, not HTTP) are the only non-proxy ports exposed

@@ -1,10 +1,10 @@
-up:
+up: iot-env
 	docker compose up -d
 
 down:
 	docker compose down
 
-restart:
+restart: iot-env
 	docker compose down && docker compose up -d
 
 logs:
@@ -16,6 +16,15 @@ update-pihole:
 
 update-iptv:
 	docker compose up -d --no-deps --force-recreate iptv
+
+# Run after loading new images with iot-home's scripts/ship.sh.
+update-iot: iot-env
+	docker compose up -d --no-deps --force-recreate iot-api iot-web
+
+# Without these, compose would recreate the iot containers with blank secrets.
+iot-env:
+	@test -n "$$MQTT_PASSWORD" -a -n "$$IOT_AUTH_SECRET" || \
+		{ echo "Set MQTT_PASSWORD and IOT_AUTH_SECRET first (README, iot-home)."; exit 1; }
 
 certs:
 	mkdir -p nginx/certs

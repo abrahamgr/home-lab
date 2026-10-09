@@ -52,9 +52,73 @@ services:
     networks:
       - proxy
 
+  # iot-home (github.com/abrahamgr/iot-home): light dashboard at /iot.
+  # Images are built on a computer and loaded here with its scripts/ship.sh; never
+  # built on the Pi. Secrets come from the shell; see README "iot-home".
+  mosquitto:
+    image: eclipse-mosquitto:2.1.2-alpine
+    container_name: mosquitto
+    command: ["/start.sh"]
+    environment:
+      MQTT_USERNAME: iot
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/start.sh:/start.sh:ro
+      - mosquitto-data:/mosquitto/data
+    # The Zigbee bridge connects from the LAN and speaks MQTT, so nginx cannot front it.
+    ports:
+      - "1883:1883"
+    logging: &small-logs
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "3"
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  iot-api:
+    image: iot-home-api:latest
+    container_name: iot-api
+    environment:
+      MQTT_URL: mqtt://mosquitto:1883
+      MQTT_USERNAME: iot
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      BETTER_AUTH_SECRET: ${IOT_AUTH_SECRET}
+      BETTER_AUTH_URL: http://rb
+      # First start only: creates the owner on an empty database, ignored after that.
+      # No value here means passed through only when set in the shell.
+      IOT_OWNER_EMAIL:
+      IOT_OWNER_PASSWORD:
+    volumes:
+      - iot-data:/data
+    depends_on:
+      - mosquitto
+    logging: *small-logs
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  iot-web:
+    image: iot-home-web:latest
+    container_name: iot-web
+    environment:
+      API_INTERNAL_URL: http://iot-api:3001
+    depends_on:
+      - iot-api
+    logging: *small-logs
+    restart: unless-stopped
+    networks:
+      - proxy
+
 volumes:
   iptv-data:
     name: iptv-data
+  iot-data:
+    name: iot-data
+  mosquitto-data:
+    name: mosquitto-data
 
 networks:
   proxy:

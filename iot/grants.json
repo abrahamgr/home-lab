@@ -1,0 +1,9 @@
+{
+  "grants": [
+    {
+      "user": "abraham.garo@gmail.com",
+      "operations": ["power.set"],
+      "devices": ["0x44e2f8fffe2464e9", "0x44e2f8fffe3408b4", "0x44e2f8fffe340523"]
+    }
+  ]
+}

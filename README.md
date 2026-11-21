@@ -102,6 +102,13 @@ Pi: in eWeLink, ZBBridge-U → Device Settings → Home Assistant → Sync Zigbe
 Sub-devices, address `192.168.0.125`, port `1883`, user `iot`, password
 `MQTT_PASSWORD`.
 
+### Who can switch the lights
+
+`iot/grants.json` lists, per account email, which lights it may switch on and off.
+It is mounted read-only into `iot-api` and read only at start, so after editing it run
+`make update-iot`. A light not listed is view-only; a broken file makes every light
+view-only and says why in `docker logs iot-api`, but never stops the app.
+
 ### Roll back
 
 Every image is also tagged with its commit. List them, point `latest` at an older one,

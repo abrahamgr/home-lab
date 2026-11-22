@@ -4,3 +4,6 @@ etc-pihole
 
 # nginx
 nginx/certs
+
+# iot-home database copies: password hashes and emails
+iot/backups

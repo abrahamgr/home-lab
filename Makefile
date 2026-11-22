@@ -1,3 +1,6 @@
+# bash, not sh: iot-owner-password reads without echo (read -s).
+SHELL := /bin/bash
+
 up: iot-env
 	docker compose up -d
 
@@ -17,9 +20,21 @@ update-pihole:
 update-iptv:
 	docker compose up -d --no-deps --force-recreate iptv
 
-# Run after loading new images with iot-home's scripts/ship.sh.
+# Run after loading new images with iot-home's scripts/ship.sh. Takes a copy of the
+# database first (iot/backup.sh), which stops iot-api; the up starts it again.
 update-iot: iot-env
+	iot/backup.sh
 	docker compose up -d --no-deps --force-recreate iot-api iot-web
+
+# Back to before the last update-iot: its database copy and the images that wrote it.
+rollback-iot: iot-env
+	iot/rollback.sh
+
+# Sets the iot-home owner's password, e.g. when it is forgotten. Works with the app
+# running or stopped; the owner's sessions end. The password never reaches argv.
+iot-owner-password:
+	@read -rsp "New owner password (12+ characters): " p; echo; \
+		printf '%s\n' "$$p" | docker compose run --rm -T --no-deps iot-api bun owner-password.js
 
 # Without these, compose would recreate the iot containers with blank secrets.
 iot-env:

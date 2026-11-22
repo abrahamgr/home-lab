@@ -91,8 +91,13 @@ services:
       # No value here means passed through only when set in the shell.
       IOT_OWNER_EMAIL:
       IOT_OWNER_PASSWORD:
-      # Who may switch which light (iot-home spec 0002). Read at start: edit, then
-      # `make update-iot`. The image's own file names only a dev user.
+      # Optional (iot-home spec 0003): emails links to people the owner adds. Unset,
+      # the links are only shown to the owner. EMAIL_FROM is required with the key.
+      RESEND_API_KEY:
+      EMAIL_FROM:
+      # Spec 0002's grants file. From spec 0003 on, grants are managed in the app and
+      # this is read by nothing; kept only so a rollback to a spec 0002 image still has
+      # it. Remove both lines once the spec 0003 deploy is confirmed.
       GRANTS_PATH: /config/grants.json
     volumes:
       - iot-data:/data

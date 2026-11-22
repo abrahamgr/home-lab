@@ -72,6 +72,7 @@ refuse to run without the first two:
 | `MQTT_PASSWORD` | Password of MQTT user `iot`, used by the broker, the API and the Zigbee bridge | Only together with the bridge's setting in eWeLink, or the lights stop updating |
 | `IOT_AUTH_SECRET` | Signs sign-in sessions; 32+ characters (`openssl rand -hex 32`) | Never, normally: changing it signs everyone out |
 | `IOT_OWNER_EMAIL`, `IOT_OWNER_PASSWORD` | The account to sign in with (password 12+ characters) | First start only. Ignored once the account exists; leave them unset after |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Optional. Emails the link a new person uses to choose a password. `EMAIL_FROM` like `Lights at home <lights@your-domain>`; required with the key | Unset, the owner copies the link from the screen instead |
 
 ```bash
 read -rs MQTT_PASSWORD && export MQTT_PASSWORD
@@ -96,6 +97,10 @@ here:
 make update-iot
 ```
 
+It first takes a copy of the database (see Backups), which stops `iot-api` for a few
+seconds; the lights and everything else keep working. Check `docker logs iot-api`
+afterwards: it says whether the owner is present and whether email is configured.
+
 The first time, use `make up` instead (with the owner variables set too), then
 `make restart-nginx` to load `nginx/conf.d/http/iot.conf`, and point the bridge at this
 Pi: in eWeLink, ZBBridge-U → Device Settings → Home Assistant → Sync Zigbee
@@ -104,26 +109,43 @@ Sub-devices, address `192.168.0.125`, port `1883`, user `iot`, password
 
 ### Who can switch the lights
 
-`iot/grants.json` lists, per account email, which lights it may switch on and off.
-It is mounted read-only into `iot-api` and read only at start, so after editing it run
-`make update-iot`. A light not listed is view-only; a broken file makes every light
-view-only and says why in `docker logs iot-api`, but never stops the app.
+Managed in the app: the owner (the first account) controls every light, and gives
+or takes away other people's control on **Manage**. `iot/grants.json` belonged to the
+previous version; nothing reads it now, and it stays only so a rollback to that
+version still works.
+
+### Backups
+
+`make update-iot` runs `iot/backup.sh` before starting the new version. It stops
+`iot-api`, copies the database out of the `iot-data` volume into
+`iot/backups/<UTC time>-<image>/` with the ids of the images that wrote it, and keeps
+the newest 5. The copies hold password hashes and emails: they are git-ignored, readable
+only by you, and never leave the Pi. There is no copy between deploys: if the data is
+damaged then, changes since the last deploy are lost (the Manage record shows what they
+were).
 
 ### Roll back
 
-Every image is also tagged with its commit. List them, point `latest` at an older one,
-and recreate:
-
 ```bash
-docker image ls iot-home-api
+make rollback-iot
 ```
 
-```bash
-docker tag iot-home-api:<commit> iot-home-api:latest && docker tag iot-home-web:<commit> iot-home-web:latest && make update-iot
-```
+It puts back the newest copy and the images that wrote it, together, then waits for
+the API's health check (about 30 s) and prints how long it took. It asks first, since
+changes made in the app since that copy are lost. For an older copy:
+`iot/rollback.sh iot/backups/<dir>`.
 
-Old images take space on the SD card; remove ones you no longer need with
+Old images take space on the SD card. Keep the ones a copy names; remove others with
 `docker image rm iot-home-api:<commit> iot-home-web:<commit>`.
+
+### Forgotten owner password
+
+```bash
+make iot-owner-password
+```
+
+Asks for the new password without showing it, and ends the owner's sessions. Works
+with the app running or stopped.
 
 ### Data
 
